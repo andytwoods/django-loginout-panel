@@ -3,6 +3,7 @@ from django.conf import settings
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.urls import path
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -32,7 +33,12 @@ class LoginOutPanel(Panel):
 
     @property
     def nav_title(self):
-        return _("Login / out")
+        # Wrap the label so the panel's JS can tell a click on the title text
+        # (open the panel body) apart from a click elsewhere on the button
+        # (toggle login/logout).
+        return format_html(
+            '<span class="djLoginOutTitle">{}</span>', _("Login / out")
+        )
 
     @property
     def nav_subtitle(self):
@@ -41,11 +47,16 @@ class LoginOutPanel(Panel):
         # JS (the obvious approach) breaks when the project sets
         # CSRF_COOKIE_HTTPONLY=True (cookie unreadable from JS) or
         # CSRF_USE_SESSIONS=True (no CSRF cookie at all); get_token works in
-        # every case.
-        token = get_token(self.toolbar.request)
+        # every case. ``is_authenticated`` lets the button-level click pick the
+        # login or logout endpoint when toggling.
+        request = self.toolbar.request
+        token = get_token(request)
+        user = getattr(request, "user", None)
+        is_authenticated = bool(user is not None and user.is_authenticated)
         return mark_safe(
             render_to_string(
-                "loginout_panel/nav_subtitle.html", {"csrf_token": token}
+                "loginout_panel/nav_subtitle.html",
+                {"csrf_token": token, "is_authenticated": is_authenticated},
             )
         )
 

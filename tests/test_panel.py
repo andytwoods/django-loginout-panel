@@ -45,6 +45,27 @@ class NavSubtitleTests(SimpleTestCase):
         self.assertNotIn("<a ", html)
         self.assertIn('data-loginout-url', html)
 
+    def test_nav_subtitle_wires_button_toggle(self):
+        # Clicking the button (not the title text / subtitle links) toggles auth,
+        # so the subtitle must expose the auth state and both endpoints and bind
+        # the capture-phase handler.
+        html = render_to_string(
+            "loginout_panel/nav_subtitle.html", {"is_authenticated": True}
+        )
+        self.assertIn("window.loginoutPanelAuthed = true", html)
+        self.assertIn(reverse("djdt:loginout_login"), html)
+        self.assertIn(reverse("djdt:loginout_logout"), html)
+        self.assertIn("loginoutPanelBound", html)
+
+
+class NavTitleTests(SimpleTestCase):
+    def test_title_wrapped_in_detectable_span(self):
+        # The title text must be wrapped so a click on it can be told apart from
+        # a click elsewhere on the panel button.
+        panel = _panel_for(RequestFactory().get("/"))
+        self.assertIn('class="djLoginOutTitle"', panel.nav_title)
+        self.assertIn("Login / out", panel.nav_title)
+
     def test_panel_property_returns_safe_html(self):
         panel = _panel_for(RequestFactory().get("/"))
         subtitle = panel.nav_subtitle

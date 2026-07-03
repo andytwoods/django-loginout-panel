@@ -18,19 +18,17 @@
   // Rendered server-side via get_token(); works even when the csrftoken cookie
   // is HttpOnly or CSRF is stored in the session (no cookie to read from JS).
   window.loginoutPanelCsrf = "{{ csrf_token|escapejs }}";
-  window.loginoutPanelCall = window.loginoutPanelCall || function (el, event) {
-    // These controls sit inside the toolbar's panel button (an <a>). Stop the
-    // click from toggling the panel body or navigating. Using <span> rather
-    // than <a> also avoids nested anchors, which are invalid HTML: the browser
-    // would hoist them out of the button and misalign the subtitle.
-    event = event || window.event;
-    if (event) { event.preventDefault(); event.stopPropagation(); }
+  window.loginoutPanelAuthed = {{ is_authenticated|yesno:"true,false" }};
+  window.loginoutPanelLoginUrl = "{% url 'djdt:loginout_login' %}";
+  window.loginoutPanelLogoutUrl = "{% url 'djdt:loginout_logout' %}";
+
+  // Core POST: hit an endpoint and reload on success.
+  window.loginoutPanelPost = window.loginoutPanelPost || function (url) {
     function getCookie(name) {
       var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
       return m ? m.pop() : "";
     }
     var token = window.loginoutPanelCsrf || getCookie("csrftoken");
-    var url = (el.getAttribute && el.getAttribute("data-loginout-url")) || el.href;
     fetch(url, {
       method: "POST",
       credentials: "same-origin",
@@ -43,4 +41,37 @@
       .catch(function (e) { console.error("[loginout_panel]", e); });
     return false;
   };
+
+  // Explicit "log in" / "log out" controls in the subtitle. Stop the click from
+  // toggling the panel body or navigating.
+  window.loginoutPanelCall = window.loginoutPanelCall || function (el, event) {
+    event = event || window.event;
+    if (event) { event.preventDefault(); event.stopPropagation(); }
+    var url = (el.getAttribute && el.getAttribute("data-loginout-url")) || el.href;
+    return window.loginoutPanelPost(url);
+  };
+
+  // Clicking the panel button anywhere except the title text or the explicit
+  // subtitle links toggles auth (log in when logged out, log out when logged
+  // in). Clicking the title text falls through to the toolbar, which opens the
+  // panel body. Bound once, in the capture phase so it runs before the
+  // toolbar's own delegated click handler and can suppress the body toggle.
+  if (!window.loginoutPanelBound) {
+    window.loginoutPanelBound = true;
+    document.addEventListener("click", function (e) {
+      var t = e.target;
+      if (!t || !t.closest) { return; }
+      if (!t.closest("a.LoginOutPanel")) { return; }   // not our panel button
+      if (t.closest(".djLoginOutLink")) { return; }    // explicit log in / out
+      if (t.closest(".djLoginOutTitle")) { return; }   // title text -> open body
+      // Empty area of the button: toggle auth, do not open the panel body.
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      window.loginoutPanelPost(
+        window.loginoutPanelAuthed
+          ? window.loginoutPanelLogoutUrl
+          : window.loginoutPanelLoginUrl
+      );
+    }, true);
+  }
 </script>
