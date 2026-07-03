@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-loginout-panel"
+version = "0.1.0"
+description = "A Django Debug Toolbar panel that logs a configured user in or out with one click during development."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Andy Woods", email = "andytwoods@gmail.com" }]
+keywords = ["django", "debug-toolbar", "development", "authentication"]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Debuggers",
+]
+dependencies = [
+    "Django>=3.2",
+    "django-debug-toolbar>=3.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/andytwoods/django-loginout-panel"
+Source = "https://github.com/andytwoods/django-loginout-panel"
+
+[tool.setuptools.packages.find]
+include = ["loginout_panel*"]
+
+[tool.setuptools.package-data]
+loginout_panel = ["templates/loginout_panel/*.html"]

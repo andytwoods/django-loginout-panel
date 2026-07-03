@@ -1,0 +1,15 @@
+{% load i18n %}
+<a href="{% url 'djdt:loginout_login' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log in" %}</a>
+&nbsp;/&nbsp;
+<a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log out" %}</a>
+<script>
+  window.loginoutPanelCall = window.loginoutPanelCall || function (el) {
+    fetch(el.href, {credentials: "same-origin"})
+      .then(function (r) {
+        if (r.ok) { location.reload(); return; }
+        throw new Error(r.status + " " + r.statusText);
+      })
+      .catch(function (e) { console.error("[loginout_panel]", e); });
+    return false;
+  };
+</script>

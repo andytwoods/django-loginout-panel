@@ -1,0 +1,18 @@
+{% load i18n %}
+<h3>{% trans "One-click login / out" %}</h3>
+
+<p>
+  {% if is_authenticated %}
+    {% blocktrans %}Currently logged in as <strong>{{ current_user }}</strong>.{% endblocktrans %}
+  {% else %}
+    {% trans "Currently not logged in." %}
+  {% endif %}
+</p>
+
+<p>{% trans "Configured user (LOGINOUT_USERNAME)" %}: <code>{{ username|default:"(not set)" }}</code></p>
+
+<p>
+  <a href="{% url 'djdt:loginout_login' %}" onclick="return loginoutPanelCall(this)">{% trans "Log in" %}</a>
+  &nbsp;&middot;&nbsp;
+  <a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)">{% trans "Log out" %}</a>
+</p>
