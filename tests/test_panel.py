@@ -37,6 +37,14 @@ class NavSubtitleTests(SimpleTestCase):
         self.assertIn(reverse("djdt:loginout_logout"), html)
         self.assertIn("loginoutPanelCall", html)
 
+    def test_nav_subtitle_uses_no_anchors(self):
+        # The toolbar wraps nav_subtitle in a <small> inside the panel-button
+        # <a>. Anchors here would be invalid nested <a>, which the browser hoists
+        # out of the button and misaligns. The controls must be <span>s instead.
+        html = render_to_string("loginout_panel/nav_subtitle.html")
+        self.assertNotIn("<a ", html)
+        self.assertIn('data-loginout-url', html)
+
     def test_panel_property_returns_safe_html(self):
         panel = _panel_for(RequestFactory().get("/"))
         subtitle = panel.nav_subtitle

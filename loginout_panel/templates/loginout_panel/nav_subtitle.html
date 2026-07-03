@@ -1,18 +1,37 @@
 {% load i18n %}
-<a href="{% url 'djdt:loginout_login' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log in" %}</a>
+<span class="djLoginOutLink"
+      role="button"
+      tabindex="0"
+      data-loginout-url="{% url 'djdt:loginout_login' %}"
+      onclick="return loginoutPanelCall(this, event)"
+      onkeydown="if(event.key==='Enter'||event.key===' ')return loginoutPanelCall(this, event)"
+      style="cursor: pointer; text-decoration: underline;">{% trans "log in" %}</span>
 &nbsp;/&nbsp;
-<a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log out" %}</a>
+<span class="djLoginOutLink"
+      role="button"
+      tabindex="0"
+      data-loginout-url="{% url 'djdt:loginout_logout' %}"
+      onclick="return loginoutPanelCall(this, event)"
+      onkeydown="if(event.key==='Enter'||event.key===' ')return loginoutPanelCall(this, event)"
+      style="cursor: pointer; text-decoration: underline;">{% trans "log out" %}</span>
 <script>
   // Rendered server-side via get_token(); works even when the csrftoken cookie
   // is HttpOnly or CSRF is stored in the session (no cookie to read from JS).
   window.loginoutPanelCsrf = "{{ csrf_token|escapejs }}";
-  window.loginoutPanelCall = window.loginoutPanelCall || function (el) {
+  window.loginoutPanelCall = window.loginoutPanelCall || function (el, event) {
+    // These controls sit inside the toolbar's panel button (an <a>). Stop the
+    // click from toggling the panel body or navigating. Using <span> rather
+    // than <a> also avoids nested anchors, which are invalid HTML: the browser
+    // would hoist them out of the button and misalign the subtitle.
+    event = event || window.event;
+    if (event) { event.preventDefault(); event.stopPropagation(); }
     function getCookie(name) {
       var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
       return m ? m.pop() : "";
     }
     var token = window.loginoutPanelCsrf || getCookie("csrftoken");
-    fetch(el.href, {
+    var url = (el.getAttribute && el.getAttribute("data-loginout-url")) || el.href;
+    fetch(url, {
       method: "POST",
       credentials: "same-origin",
       headers: {"X-CSRFToken": token}

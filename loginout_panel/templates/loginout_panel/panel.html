@@ -12,7 +12,7 @@
 <p>{% trans "Configured user (LOGINOUT_USERNAME)" %}: <code>{{ username|default:"(not set)" }}</code></p>
 
 <p>
-  <a href="{% url 'djdt:loginout_login' %}" onclick="return loginoutPanelCall(this)">{% trans "Log in" %}</a>
+  <a href="{% url 'djdt:loginout_login' %}" onclick="return loginoutPanelCall(this, event)">{% trans "Log in" %}</a>
   &nbsp;&middot;&nbsp;
-  <a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)">{% trans "Log out" %}</a>
+  <a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this, event)">{% trans "Log out" %}</a>
 </p>
