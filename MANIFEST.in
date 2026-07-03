@@ -1,3 +1,8 @@
 include LICENSE
 include README.md
 recursive-include loginout_panel/templates *
+
+# Keep the distribution lean: dev-only trees don't belong in the sdist.
+prune tests
+prune demo
+prune images

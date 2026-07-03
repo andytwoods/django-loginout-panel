@@ -1,6 +1,6 @@
 # django-loginout-panel
 
-![Logging in and out from the debug toolbar panel](images/demo.gif)
+![Logging in and out from the debug toolbar panel](https://raw.githubusercontent.com/andytwoods/django-loginout-panel/master/images/demo.gif)
 
 A [Django Debug Toolbar](https://github.com/jazzband/django-debug-toolbar) panel
 that logs a configured user **in or out with one click** – handy during local
