@@ -4,7 +4,15 @@
 <a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log out" %}</a>
 <script>
   window.loginoutPanelCall = window.loginoutPanelCall || function (el) {
-    fetch(el.href, {credentials: "same-origin"})
+    function getCookie(name) {
+      var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+      return m ? m.pop() : "";
+    }
+    fetch(el.href, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {"X-CSRFToken": getCookie("csrftoken")}
+    })
       .then(function (r) {
         if (r.ok) { location.reload(); return; }
         throw new Error(r.status + " " + r.statusText);

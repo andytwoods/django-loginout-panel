@@ -1,5 +1,6 @@
 from debug_toolbar.panels import Panel
 from django.conf import settings
+from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 from django.urls import path
 from django.utils.safestring import mark_safe
@@ -11,12 +12,18 @@ from . import views
 class LoginOutPanel(Panel):
     """A Django Debug Toolbar panel that logs a configured user in or out.
 
+    The login/logout endpoints are POST-only, CSRF-protected, and guarded by
+    both the toolbar's SHOW_TOOLBAR_CALLBACK (via ``require_show_toolbar``) and
+    an explicit ``settings.DEBUG`` check, so they 404 outside development.
+
     Configuration (project settings):
         LOGINOUT_USERNAME  – username of the account to log in as (required).
         LOGINOUT_SERVER    – optional client IP allowed to use the panel. When
-                             set, requests from any other IP get a 404. When
-                             unset, the panel relies on the toolbar's own
-                             SHOW_TOOLBAR_CALLBACK (i.e. it is dev-only anyway).
+                             set, requests from any other IP get a 404.
+        LOGINOUT_TRUST_XFF – trust the ``X-Forwarded-For`` header when resolving
+                             the client IP for LOGINOUT_SERVER. Only enable this
+                             behind a reverse proxy that overwrites the header;
+                             otherwise it is client-spoofable. Defaults to False.
     """
 
     title = _("Login / out")
@@ -39,6 +46,9 @@ class LoginOutPanel(Panel):
         ]
 
     def generate_stats(self, request, response):
+        # Ensure the CSRF cookie is set so the panel's POST calls can send the
+        # token back (the endpoints are csrf_protect'd).
+        get_token(request)
         user = getattr(request, "user", None)
         self.record_stats(
             {

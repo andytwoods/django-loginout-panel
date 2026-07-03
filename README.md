@@ -11,9 +11,9 @@ username you configure, then reloads the page.
 
 ## Requirements
 
-- Python 3.8+
-- Django 3.2+
-- django-debug-toolbar 3.2+
+- Python 3.12+
+- Django 5.2+
+- django-debug-toolbar 6.0+
 
 ## Installation
 
@@ -54,6 +54,11 @@ LOGINOUT_USERNAME = "me@example.com"
 # Optional: only allow the panel's endpoints from this client IP.
 # Leave unset to rely on the toolbar's own SHOW_TOOLBAR_CALLBACK / DEBUG gate.
 LOGINOUT_SERVER = "127.0.0.1"
+
+# Optional: trust the X-Forwarded-For header when matching LOGINOUT_SERVER.
+# Only enable this behind a reverse proxy that overwrites the header; otherwise
+# a client can spoof the allowed IP. Defaults to False (REMOTE_ADDR is used).
+LOGINOUT_TRUST_XFF = False
 ```
 
 Make sure `debug_toolbar` is otherwise wired up as usual (middleware +
@@ -64,12 +69,13 @@ Make sure `debug_toolbar` is otherwise wired up as usual (middleware +
 
 | Setting | Required | Purpose |
 | --- | --- | --- |
-| `LOGINOUT_USERNAME` | yes | Username (matched against your user model's `USERNAME_FIELD`) to log in as. |
+| `LOGINOUT_USERNAME` | yes | Username (matched against your user model's `USERNAME_FIELD`) to log in as. Only **active** users are eligible. |
 | `LOGINOUT_SERVER` | no | If set, only requests from this client IP may use the login/logout endpoints; all others get a `404`. |
+| `LOGINOUT_TRUST_XFF` | no | Trust `X-Forwarded-For` when resolving the client IP for `LOGINOUT_SERVER`. Enable only behind a trusted reverse proxy. Defaults to `False`. |
 
-The login view authenticates using `settings.AUTHENTICATION_BACKENDS[0]`, so make
-sure your first backend is the one you want (Django's default
-`ModelBackend` works fine).
+The login view authenticates using `settings.AUTHENTICATION_BACKENDS[0]` (falling
+back to Django's `ModelBackend` when the setting is unset), so make sure your
+first backend is the one you want.
 
 ## Usage
 
@@ -86,17 +92,33 @@ configured username.
 - `LoginOutPanel` subclasses `debug_toolbar.panels.Panel` and registers two
   URLs under the toolbar's `djdt` namespace: `loginout_login` and
   `loginout_logout`.
-- The endpoints return JSON and are wrapped in an `on_local_server` decorator
-  that enforces `LOGINOUT_SERVER` when configured.
+- The endpoints return JSON and are **POST-only, CSRF-protected**, and layered
+  behind the toolbar's own `SHOW_TOOLBAR_CALLBACK`, an explicit `settings.DEBUG`
+  check, and the optional `on_local_server` (`LOGINOUT_SERVER`) IP guard. Any of
+  those failing yields a `404` (or `405`/`403` for wrong method / missing token).
 - No models, no migrations – it only reads settings and calls the standard auth
   functions.
 
 ## Security note
 
 Never enable this in production. It provides an unauthenticated way to log in as
-an arbitrary account. Keep it in a dev-only settings module, behind the debug
-toolbar (which itself should only run with `DEBUG = True` and a restrictive
-`SHOW_TOOLBAR_CALLBACK`). `LOGINOUT_SERVER` is an extra belt-and-braces IP check.
+an arbitrary account. It is defended in depth so an accidental production deploy
+still fails closed:
+
+- **POST + CSRF only.** The endpoints reject `GET` and require a CSRF token, so a
+  stray `<img src>`/link cannot silently log a browser in.
+- **`DEBUG` gate.** They `404` whenever `settings.DEBUG` is off – independent of
+  the toolbar's callback, which a project might loosen to show the toolbar to
+  staff in production.
+- **Toolbar callback.** They also honour `SHOW_TOOLBAR_CALLBACK`, so they are
+  only reachable where the toolbar itself is.
+- **Active users only, first backend.** Only active accounts can be logged in,
+  via `AUTHENTICATION_BACKENDS[0]`.
+- **`LOGINOUT_SERVER`** is an extra belt-and-braces IP check. `X-Forwarded-For`
+  is ignored unless you explicitly opt in with `LOGINOUT_TRUST_XFF` behind a
+  trusted proxy, so the allowlist cannot be spoofed by default.
+
+Still: keep it in a dev-only settings module and never ship it enabled.
 
 ## License
 

@@ -1,5 +1,3 @@
-from typing import List
-
 SECRET_KEY = "NOTASECRET"
 
 DEBUG = True
@@ -11,7 +9,7 @@ DATABASES = {
     },
 }
 
-ALLOWED_HOSTS: List[str] = []
+ALLOWED_HOSTS: list[str] = []
 INTERNAL_IPS = ["127.0.0.1"]
 
 # The suite drives the panel/toolbar directly rather than through the
@@ -28,6 +26,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
 
