@@ -73,6 +73,12 @@ class NavTitleTests(SimpleTestCase):
         self.assertIn('class="djLoginOutTitle"', panel.nav_title)
         self.assertIn("Login / out", panel.nav_title)
 
+    def test_title_inherits_color(self):
+        # Without color: inherit the title span keeps a near-white colour and
+        # disappears against the toolbar's pale hover background.
+        panel = _panel_for(RequestFactory().get("/"))
+        self.assertIn("color: inherit", panel.nav_title)
+
     def test_panel_property_returns_safe_html(self):
         panel = _panel_for(RequestFactory().get("/"))
         subtitle = panel.nav_subtitle

@@ -36,8 +36,12 @@ class LoginOutPanel(Panel):
         # Wrap the label so the panel's JS can tell a click on the title text
         # (open the panel body) apart from a click elsewhere on the button
         # (toggle login/logout).
+        # color: inherit so the title follows the button colour (white normally,
+        # dark on the toolbar's pale hover background) instead of picking up a
+        # near-white colour that vanishes on hover.
         return format_html(
-            '<span class="djLoginOutTitle">{}</span>', _("Login / out")
+            '<span class="djLoginOutTitle" style="color: inherit;">{}</span>',
+            _("Login / out"),
         )
 
     @property
