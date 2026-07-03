@@ -45,6 +45,13 @@ class NavSubtitleTests(SimpleTestCase):
         self.assertNotIn("<a ", html)
         self.assertIn('data-loginout-url', html)
 
+    def test_subtitle_links_inherit_color(self):
+        # Without color: inherit the spans pick up a near-white color and vanish
+        # against the toolbar's pale hover background. Inheriting matches the
+        # stock #999 subtitle colour, which stays legible on hover.
+        html = render_to_string("loginout_panel/nav_subtitle.html")
+        self.assertIn("color: inherit", html)
+
     def test_nav_subtitle_wires_button_toggle(self):
         # Clicking the button (not the title text / subtitle links) toggles auth,
         # so the subtitle must expose the auth state and both endpoints and bind

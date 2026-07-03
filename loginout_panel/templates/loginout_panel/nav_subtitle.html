@@ -5,7 +5,7 @@
       data-loginout-url="{% url 'djdt:loginout_login' %}"
       onclick="return loginoutPanelCall(this, event)"
       onkeydown="if(event.key==='Enter'||event.key===' ')return loginoutPanelCall(this, event)"
-      style="cursor: pointer; text-decoration: underline;">{% trans "log in" %}</span>
+      style="color: inherit; cursor: pointer; text-decoration: underline;">{% trans "log in" %}</span>
 &nbsp;/&nbsp;
 <span class="djLoginOutLink"
       role="button"
@@ -13,7 +13,7 @@
       data-loginout-url="{% url 'djdt:loginout_logout' %}"
       onclick="return loginoutPanelCall(this, event)"
       onkeydown="if(event.key==='Enter'||event.key===' ')return loginoutPanelCall(this, event)"
-      style="cursor: pointer; text-decoration: underline;">{% trans "log out" %}</span>
+      style="color: inherit; cursor: pointer; text-decoration: underline;">{% trans "log out" %}</span>
 <script>
   // Rendered server-side via get_token(); works even when the csrftoken cookie
   // is HttpOnly or CSRF is stored in the session (no cookie to read from JS).
