@@ -25,6 +25,9 @@ dependencies = [
     "django-debug-toolbar>=3.2",
 ]
 
+[project.optional-dependencies]
+test = ["pytest", "pytest-django"]
+
 [project.urls]
 Homepage = "https://github.com/andytwoods/django-loginout-panel"
 Source = "https://github.com/andytwoods/django-loginout-panel"

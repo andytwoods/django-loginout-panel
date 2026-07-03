@@ -17,3 +17,6 @@ env/
 .vscode/
 .pytest_cache/
 .mypy_cache/
+.tox/
+htmlcov/
+.coverage
