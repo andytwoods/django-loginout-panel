@@ -9,6 +9,21 @@ The panel adds a small **log in / log out** control to the toolbar sidebar. Each
 click hits a tiny JSON endpoint that calls Django's `login()` / `logout()` for a
 username you configure, then reloads the page.
 
+![Logging in and out from the debug toolbar panel](demo/demo.gif)
+
+## Try it (no install)
+
+With [uv](https://docs.astral.sh/uv/) you can run a self-contained demo straight
+from GitHub – no clone, no virtualenv, no `pip install`:
+
+```bash
+uv run https://raw.githubusercontent.com/andytwoods/django-loginout-panel/master/demo/app.py
+```
+
+uv provisions a matching Python and all dependencies in a throwaway environment,
+then serves the demo at <http://127.0.0.1:8000/>. See [`demo/`](demo/) for a
+conventional multi-file version and more detail.
+
 ## Requirements
 
 - Python 3.12+
