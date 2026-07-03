@@ -47,4 +47,5 @@ Then open <http://127.0.0.1:8000/>.
 2. Open the debug toolbar and select the **Login / out** panel.
 3. Record: click **log in** (banner turns green, "Logged in as demo"), then
    **log out** (banner returns to grey). The page reloads on each click.
-4. Save the recording as `demo/demo.gif` so the main README can reference it.
+4. Save the recording as `images/demo.gif` (at the repo root) so the main
+   README displays it at the top of the page.

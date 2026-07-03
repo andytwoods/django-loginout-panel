@@ -1,5 +1,7 @@
 # django-loginout-panel
 
+![Logging in and out from the debug toolbar panel](images/demo.gif)
+
 A [Django Debug Toolbar](https://github.com/jazzband/django-debug-toolbar) panel
 that logs a configured user **in or out with one click** – handy during local
 development when you constantly need to jump between an authenticated and an
@@ -8,8 +10,6 @@ anonymous session.
 The panel adds a small **log in / log out** control to the toolbar sidebar. Each
 click hits a tiny JSON endpoint that calls Django's `login()` / `logout()` for a
 username you configure, then reloads the page.
-
-![Logging in and out from the debug toolbar panel](demo/demo.gif)
 
 ## Try it (no install)
 
