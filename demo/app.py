@@ -3,7 +3,7 @@
 # dependencies = [
 #     "django>=5.2",
 #     "django-debug-toolbar>=6.0",
-#     "django-loginout-panel @ git+https://github.com/andytwoods/django-loginout-panel@master",
+#     "django-loginout-panel",
 # ]
 # ///
 """Single-file, zero-install demo of django-loginout-panel.
