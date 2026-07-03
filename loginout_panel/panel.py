@@ -36,7 +36,18 @@ class LoginOutPanel(Panel):
 
     @property
     def nav_subtitle(self):
-        return mark_safe(render_to_string("loginout_panel/nav_subtitle.html"))
+        # Render the CSRF token into the template so the panel's JS can send it
+        # in the X-CSRFToken header. Reading it from the ``csrftoken`` cookie in
+        # JS (the obvious approach) breaks when the project sets
+        # CSRF_COOKIE_HTTPONLY=True (cookie unreadable from JS) or
+        # CSRF_USE_SESSIONS=True (no CSRF cookie at all); get_token works in
+        # every case.
+        token = get_token(self.toolbar.request)
+        return mark_safe(
+            render_to_string(
+                "loginout_panel/nav_subtitle.html", {"csrf_token": token}
+            )
+        )
 
     @classmethod
     def get_urls(cls):

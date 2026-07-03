@@ -43,6 +43,19 @@ class NavSubtitleTests(SimpleTestCase):
         self.assertIsInstance(subtitle, SafeString)
         self.assertIn(reverse("djdt:loginout_login"), subtitle)
 
+    def test_panel_property_embeds_csrf_token(self):
+        # The token is rendered server-side (not read from the cookie) so the
+        # POST works even when CSRF_COOKIE_HTTPONLY / CSRF_USE_SESSIONS is set.
+        # get_token() returns a freshly masked value each call, so assert a
+        # non-empty token is embedded rather than matching an exact string.
+        import re
+
+        panel = _panel_for(RequestFactory().get("/"))
+        subtitle = panel.nav_subtitle
+        match = re.search(r'window\.loginoutPanelCsrf = "([^"]*)"', subtitle)
+        self.assertIsNotNone(match)
+        self.assertGreater(len(match.group(1)), 0)
+
 
 class GenerateStatsTests(SimpleTestCase):
     def _stats_for(self, user):

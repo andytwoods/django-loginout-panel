@@ -3,15 +3,19 @@
 &nbsp;/&nbsp;
 <a href="{% url 'djdt:loginout_logout' %}" onclick="return loginoutPanelCall(this)" style="color: inherit;">{% trans "log out" %}</a>
 <script>
+  // Rendered server-side via get_token(); works even when the csrftoken cookie
+  // is HttpOnly or CSRF is stored in the session (no cookie to read from JS).
+  window.loginoutPanelCsrf = "{{ csrf_token|escapejs }}";
   window.loginoutPanelCall = window.loginoutPanelCall || function (el) {
     function getCookie(name) {
       var m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
       return m ? m.pop() : "";
     }
+    var token = window.loginoutPanelCsrf || getCookie("csrftoken");
     fetch(el.href, {
       method: "POST",
       credentials: "same-origin",
-      headers: {"X-CSRFToken": getCookie("csrftoken")}
+      headers: {"X-CSRFToken": token}
     })
       .then(function (r) {
         if (r.ok) { location.reload(); return; }
