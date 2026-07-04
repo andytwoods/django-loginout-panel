@@ -42,7 +42,7 @@ TEMPLATES = [
 
 # Only our panel, so DebugToolbar.get_panel_by_id("LoginOutPanel") is unambiguous.
 DEBUG_TOOLBAR_PANELS = [
-    "loginout_panel.LoginOutPanel",
+    "loginout_panel.panel.LoginOutPanel",
 ]
 
 # The account the panel logs in as, under test.

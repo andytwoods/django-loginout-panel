@@ -72,7 +72,7 @@ if not settings.configured:
         STATIC_URL="static/",
         USE_TZ=True,
         DEBUG_TOOLBAR_PANELS=[
-            "loginout_panel.LoginOutPanel",
+            "loginout_panel.panel.LoginOutPanel",
             "debug_toolbar.panels.request.RequestPanel",
             "debug_toolbar.panels.sql.SQLPanel",
         ],

@@ -57,7 +57,7 @@ INSTALLED_APPS += [
 ]
 
 DEBUG_TOOLBAR_PANELS = [
-    "loginout_panel.LoginOutPanel",
+    "loginout_panel.panel.LoginOutPanel",
     # ... your other panels ...
     "debug_toolbar.panels.headers.HeadersPanel",
     "debug_toolbar.panels.sql.SQLPanel",
